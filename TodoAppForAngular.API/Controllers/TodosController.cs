@@ -58,17 +58,39 @@ public class TodosController : ControllerBase
         return NoContent();
     }
 
+    [HttpPut("IsCompleted/{id}")]
+    public async Task<IActionResult> IsCompleted(int id)
+    {
+        var todo =await _context.Todos!.FindAsync(id);
+
+        todo.IsCompleted = !todo.IsCompleted;
+      await  _context.SaveChangesAsync();
+      return NoContent();
+
+    }
+    
+    
+    
+
     // POST: api/Todos
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<Todo>> PostTodo(Todo todo)
     {
         if (_context.Todos == null) return Problem("Entity set 'AppDbContext.Todos'  is null.");
+        
+        todo.Created=DateTime.Now;
         _context.Todos.Add(todo);
         await _context.SaveChangesAsync();
 
         return CreatedAtAction("GetTodo", new { id = todo.Id }, todo);
     }
+    
+    
+    
+    
+    
+    
 
     // DELETE: api/Todos/5
     [HttpDelete("{id}")]
