@@ -20,18 +20,18 @@ namespace TodoAppForAngular.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(IFormFile? photo, CancellationToken cancellationToken)
+        public async Task<IActionResult> Upload(IFormFile? file, CancellationToken cancellationToken)
         {
-            if (photo is not { Length: > 0 }) return BadRequest("hata");
+            if (file is not { Length: > 0 }) return BadRequest("hata");
             var root = _fileProvider.GetDirectoryContents("wwwroot");
             var picturesDirectory = root.First(x => x.IsDirectory && x is { Exists: true, Name: "files" });
 
-            var path = Path.Combine(picturesDirectory.PhysicalPath, photo.FileName);
+            var path = Path.Combine(picturesDirectory.PhysicalPath, file.FileName);
 
             await using var stream = new FileStream(path, FileMode.Create);
-            await photo.CopyToAsync(stream, cancellationToken);
+            await file.CopyToAsync(stream, cancellationToken);
 
-            var returnPath = photo.FileName;
+            var returnPath = file.FileName;
 
             return Created(string.Empty, null);
         }
